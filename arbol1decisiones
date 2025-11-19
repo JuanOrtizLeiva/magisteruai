@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Árbol Tecnipro</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Evita barras de scroll del navegador, usamos el zoom interno */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #tree-container {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+        #tree-container:active {
+            cursor: grabbing;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 0 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h3>Árbol de Decisiones: Gestión Curso OTEC (Demo)</h3>
+    <small>Usa el mouse para arrastrar y la rueda para hacer Zoom</small>
+</header>
+
+<div id="tree-container">
+    <div class="mermaid">
+        %% TIPO DE GRÁFICO: Árbol de arriba hacia abajo (TD)
+        graph TD
+        
+        %% ESTILOS
+        classDef decision fill:#f9d5e5,stroke:#333,stroke-width:2px;
+        classDef process fill:#e0f7fa,stroke:#006064,stroke-width:1px;
+        classDef endNode fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray: 5 5;
+
+        %% NODOS
+        Start((Inicio Solicitud)) --> A{¿Cliente tiene<br>Franquicia SENCE?}
+        
+        A -- Sí --> B[Solicitar RUT Empresa]
+        A -- No --> C[Ofrecer Venta Directa]
+        
+        B --> D{¿Curso tiene<br>Código Vigente?}
+        
+        D -- Sí --> E[Generar Cotización SENCE]
+        D -- No --> F{¿Es factible<br>codificar?}
+        
+        F -- Sí --> G[Iniciar Trámite SENCE]
+        F -- No --> C
+        
+        G --> G1[Diseño Instruccional]
+        G1 --> G2[Subir a Plataforma]
+        G2 --> D
+        
+        E --> H{¿Cliente Acepta?}
+        C --> H
+        
+        H -- Sí --> I[Matricular Participantes]
+        H -- No --> J((Fin del Proceso))
+        
+        I --> K[Ejecución del Curso]
+        K --> L{¿Asistencia > 75%?}
+        
+        L -- Sí --> M[Emitir Certificado]
+        L -- No --> N[Emitir Informe de Asistencia]
+        
+        M --> O((Facturar))
+        N --> O
+
+        %% APLICAR ESTILOS
+        class A,D,F,H,L decision;
+        class B,C,E,G,G1,G2,I,K,M,N process;
+        class Start,J,O endNode;
+    </div>
+</div>
+
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+
+<script>
+    // Pequeño script para activar el zoom una vez que Mermaid dibuje el SVG
+    window.addEventListener('load', function() {
+        // Damos un pequeño tiempo para que mermaid renderice
+        setTimeout(function() {
+            const svgElement = document.querySelector('.mermaid svg');
+            if(svgElement) {
+                // Ajustamos tamaño
+                svgElement.style.height = '100%';
+                svgElement.style.width = '100%';
+                
+                // Activamos la librería de zoom
+                svgPanZoom(svgElement, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: true,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.5,
+                    maxZoom: 10
+                });
+            }
+        }, 1000); // Espera 1 segundo
+    });
+</script>
+
+</body>
+</html>
